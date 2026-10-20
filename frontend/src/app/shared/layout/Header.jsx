@@ -20,7 +20,9 @@ export default function Header() {
           <Image alt='logo' width={86} height={86} src={logo}></Image>
         </div>
         <div className='px-20 flex justify-between w-full items-center'>
-          <input className='shadow-sm shadow-teal-300 rounded-tr-xl p-2 w-full'></input>
+          <div className='w-full bg-teal-300 p-px [clip-path:polygon(16px_0,100%_0,100%_calc(100%_-_16px),calc(100%_-_16px)_100%,0_100%,0_16px)]'>
+            <input className='w-full bg-emerald-50 p-2 outline-none [clip-path:polygon(16px_0,100%_0,100%_calc(100%_-_16px),calc(100%_-_16px)_100%,0_100%,0_16px)]'></input>
+          </div>
         </div>
       </nav>
       <div className='w-full'>
