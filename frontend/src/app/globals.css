@@ -3,7 +3,8 @@
 /* Angled (beveled) top-left and bottom-right corners.
    Works on any element; clipping also clips borders/shadows.
    Change the cut size per element with a CSS variable:
-   <div class="beveled" style={{ "--bevel": "24px" }} /> */
+   <div class="beveled" style={{ "--bevel": "24px" }} />
+   Keep this rule outside @layer components: Tailwind v4 drops it there. */
 .beveled {
   clip-path: polygon(
     var(--bevel, 16px) 0,
