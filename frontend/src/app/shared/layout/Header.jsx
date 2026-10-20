@@ -5,7 +5,7 @@ import divider from "../../../../public/divider.svg"
 export default function Header() {
   const navButtons = [
     {title:"profile" , link:"/placeholder"},
-    {title:"listings" , link:"/placeholder"},
+  {title:"listings" , link:"/placeholder"},
     {title:"browse" , link:"/placeholder"},
   ]
   return (
