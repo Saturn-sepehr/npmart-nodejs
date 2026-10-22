@@ -1,4 +1,5 @@
 const http = require("http");
+const { handleExample } = require("./example"); // "./" means "same folder as this file"
 
 // لیست محصولات (فعلاً به‌جای پایگاه داده)
 let products = [
@@ -7,6 +8,7 @@ let products = [
   { id: 3, name: "Keyboard", price: 1200000,  stock: 18 }
 ];
 let nextId = 4; // id محصول بعدی
+  const url = req.url;       
 
 // تابع کمکی: ارسال پاسخ JSON
 function sendJson(res, status, data) {
@@ -103,6 +105,13 @@ const server = http.createServer(async (req, res) => {
 
     products = products.filter((p) => p.id !== id);
     return sendJson(res, 200, { message: "Product deleted" });
+  }
+
+  // ۶) Demo routes: GET /example and GET /example/2
+  // handleExample lives in example.js. We pass it sendJson because that
+  // helper is defined here; the module returns true if it answered.
+  if (handleExample(req, res, sendJson)) {
+    return;
   }
 
   // هر درخواست دیگری که به بالا نخورد

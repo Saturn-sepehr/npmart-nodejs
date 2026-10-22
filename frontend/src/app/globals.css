@@ -5,7 +5,7 @@
    Change the cut size per element with a CSS variable:
    <div class="beveled" style={{ "--bevel": "24px" }} />
    Keep this rule outside @layer components: Tailwind v4 drops it there. */
-.beveled {
+.beveled-left {
   clip-path: polygon(
     var(--bevel, 16px) 0,
     100% 0,
@@ -13,5 +13,16 @@
     calc(100% - var(--bevel, 16px)) 100%,
     0 100%,
     0 var(--bevel, 16px)
+  );
+}
+
+.beveled-right {
+  clip-path: polygon(
+    0 0,
+    calc(100% - var(--bevel, 16px)) 0,
+    100% var(--bevel, 16px),
+    100% 100%,
+    var(--bevel, 16px) 100%,
+    0 calc(100% - var(--bevel, 16px))
   );
 }
