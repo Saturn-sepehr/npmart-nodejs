@@ -16,7 +16,7 @@ export default function RootLayout({ children }) {
       className="h-full antialiased"
     >
       <InitAnims></InitAnims>
-      <body className="min-h-full font-mono flex flex-col bg-emerald-50">
+      <body className="min-h-full font-mono flex flex-col bg-gray-800">
         
         <Header></Header>
         {children}

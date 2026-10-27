@@ -106,4 +106,4 @@ const Carts = [
     },
 ];
 
-module.exports = Carts;
+export default Carts;

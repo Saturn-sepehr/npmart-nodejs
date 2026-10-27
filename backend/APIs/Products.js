@@ -1,5 +1,6 @@
-const productlist = require('../TempDatabase/ProductDB')
-const {readBody , sendJson} = require('../Utils/Utils')
+import productlist from '../TempDatabase/ProductDB.js'
+import { readBody, sendJson } from '../Utils/Utils.js'
+import { requireAuth } from '../Utils/Guards.js'
 
 
 let pNextId = productlist.reduce((max, p) => Math.max(max, p.id), 0) + 1;
@@ -67,6 +68,9 @@ async function productsearch(req , res) {
 
 
 async function productpost (req , res){
+    const me = requireAuth(req, res)
+    if (!me) return
+
     let data;
     try {
       data = await readBody(req);
@@ -80,6 +84,7 @@ async function productpost (req , res){
 
     const product = {
       id: pNextId,
+      userId: me.id,
       title : data.title,
       price: data.price,
       description : data.description,
@@ -93,8 +98,9 @@ async function productpost (req , res){
 }
 
 async function singleproduct (req , res){
-        const url = req.url;
-      const id = Number(url.split("/")[2]);
+      const path = req.url.split("?")[0];
+      const parts = path.split("/").filter(Boolean);
+      const id = Number(parts[parts.length - 1]);
       const product = productlist.find(p => p.id === id)
       if(!product) {
         return sendJson(res , 404 , {message : "No product with this ID exists"})
@@ -103,8 +109,12 @@ async function singleproduct (req , res){
 }
 
 async function editproduct (req , res){
-      const url = req.url;
-      const id = Number(url.split("/")[2]);
+      const me = requireAuth(req, res)
+      if (!me) return
+
+      const path = req.url.split("?")[0];
+      const parts = path.split("/").filter(Boolean);
+      const id = Number(parts[parts.length - 1]);
 
       if(Number.isNaN(id)) {
         return sendJson(res , 400 , {error : "Invalid product ID"})
@@ -114,6 +124,10 @@ async function editproduct (req , res){
 
       if(!product) {
         return sendJson(res , 404 , {message : "No product with this ID exists"})
+      }
+
+      if(product.userId !== me.id) {
+        return sendJson(res , 403 , {error : "You can only edit your own products"})
       }
       let data;
       try {
@@ -148,8 +162,12 @@ async function editproduct (req , res){
 }
 
 async function productdelete (req , res){
-      const url = req.url;
-      const id = Number(url.split("/")[2]);
+      const me = requireAuth(req, res)
+      if (!me) return
+
+      const path = req.url.split("?")[0];
+      const parts = path.split("/").filter(Boolean);
+      const id = Number(parts[parts.length - 1]);
 
       if(Number.isNaN(id)) {
         return sendJson(res , 400 , {error : "Invalid product ID"})
@@ -161,6 +179,10 @@ async function productdelete (req , res){
         return sendJson(res , 404 , {message : "No product with this ID exists"})
       }
 
+      if(product.userId !== me.id) {
+        return sendJson(res , 403 , {error : "You can only delete your own products"})
+      }
+
       const index = productlist.indexOf(product)
       productlist.splice(index , 1)
 
@@ -169,8 +191,9 @@ async function productdelete (req , res){
 
 
 async function rateproduct (req , res){
-        const url = req.url;
-      const id = Number(url.split("/")[2]);
+      const path = req.url.split("?")[0];
+      const parts = path.split("/").filter(Boolean);
+      const id = Number(parts[parts.length - 1]);
       const product = productlist.find(p => p.id === id)
       if(!product) {
         return sendJson(res , 404 , {message : "No product with this ID exists"})
@@ -192,5 +215,14 @@ async function rateproduct (req , res){
     product.rating.count = ratingcount + 1
     product.rating.rate = (meanrating * ratingcount + data.rate) / (ratingcount + 1)
     return sendJson(res , 200 , product.rating.rate)
+}
+
+export {
+    productsearch,
+    productpost,
+    singleproduct,
+    editproduct,
+    productdelete,
+    rateproduct
 }
 

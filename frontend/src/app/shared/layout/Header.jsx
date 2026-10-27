@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import React from 'react'
-import logo from "../../../../public/logo2.svg"
+import logo from "../../../../public/headerlogo.svg"
 import divider from "../../../../public/divider.svg"
 import dividerm from "../../../../public/dividermobile.svg"
 
@@ -18,7 +18,7 @@ export default function Header() {
       <nav className=' justify-between lg:flex hidden mx-5 my-2 preserve'>
         <div className='px-20 flex justify-between w-full items-center'>
           {navButtons.map((button) => (
-            <a className="group flex order spawn-down ease-expo click-hover amount-2 items-center gap-3 font-mono text-slate-700 tracking-wide transition-colors hover:text-teal-700" href={button.link} key={button.title}>
+            <a className="group flex order spawn-down ease-expo click-hover amount-2 items-center gap-3 font-mono text-teal-500 tracking-wide transition-colors hover:text-teal-700" href={button.link} key={button.title}>
               <span className="h-6 w-1.5 shrink-0 bg-gradient-to-b bg-teal-300 [clip-path:polygon(0_0,100%_0,100%_calc(100%_-_6px),calc(100%_-_6px)_100%,0_100%)]"></span>
               {button.title}
             </a>
@@ -29,11 +29,11 @@ export default function Header() {
         </div>
         <div className='px-20 flex gap-2 justify-between spawn-down ease-expo w-full items-center'>
           <div className='beveled-left w-full bg-teal-300 p-px'>
-            <input className='beveled-left w-full text-teal-500 bg-emerald-50 p-2 outline-none'></input>
+            <input className='beveled-left w-full text-teal-200 bg-gray-800  p-2 outline-none'></input>
            
           </div>
           <div className='beveled-right bg-teal-300 p-px click-hover amount-5 ease-expo'>
-            <button className='beveled-right w-full bg-emerald-50 hover:bg-emerald-100 transition-colors p-2 text-teal-400 outline-none px-10'><Search></Search></button>
+            <button className='beveled-right w-full bg-gray-800 hover:bg-slate-700 transition-colors p-2 text-teal-400 outline-none px-10'><Search></Search></button>
            
           </div>
         </div>

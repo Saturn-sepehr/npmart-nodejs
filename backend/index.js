@@ -1,123 +1,134 @@
-const http = require("http");
-const { handleExample } = require("./example"); // "./" means "same folder as this file"
+import "dotenv/config";
+import http from "http";
+import {
+  productsearch,
+  productpost,
+  singleproduct,
+  editproduct,
+  productdelete,
+  rateproduct
+} from "./APIs/Products.js";
+import { register, login } from "./APIs/Auth.js";
+import {
+  getownprofile,
+  getotherprofile,
+  editprofile,
+  editpassword,
+  deleteuser
+} from "./APIs/User.js";
+import {
+  usersearch,
+  userpost,
+  singleuser,
+  edituser,
+  userdelete,
+  productsearch as adminProductsearch,
+  productpost as adminProductpost,
+  singleproduct as adminSingleproduct,
+  editproduct as adminEditproduct,
+  productdelete as adminProductdelete
+} from "./APIs/Admin.js";
+import { sendJson } from "./Utils/Utils.js";
 
-// لیست محصولات (فعلاً به‌جای پایگاه داده)
-let products = [
-  { id: 1, name: "Laptop",   price: 32000000, stock: 5 },
-  { id: 2, name: "Mouse",    price: 450000,   stock: 40 },
-  { id: 3, name: "Keyboard", price: 1200000,  stock: 18 }
-];
-let nextId = 4; // id محصول بعدی
-  const url = req.url;       
-
-// تابع کمکی: ارسال پاسخ JSON
-function sendJson(res, status, data) {
-  res.writeHead(status, {
-    "Content-Type": "application/json; charset=utf-8"
-  });
-  res.end(JSON.stringify(data));
-}
-
-// تابع کمکی: خواندن بدنه (Body) درخواست
-function readBody(req) {
-  return new Promise((resolve, reject) => {
-    let raw = "";
-    req.on("data", (chunk) => { raw += chunk; });
-    req.on("end", () => {
-      try {
-        resolve(JSON.parse(raw));
-      } catch {
-        reject(new Error("Invalid JSON"));
-      }
-    });
-  });
-}
+const PORT = process.env.PORT || 3000;
 
 const server = http.createServer(async (req, res) => {
-  const method = req.method; // GET, POST, PUT, DELETE
-  const url = req.url;       // مثل "/products" یا "/products/2"
-  const id = Number(url.split("/")[2]); // "/products/2" ← 2
+  const method = req.method;
+  const path = req.url.split("?")[0];
+  const parts = path.split("/").filter(Boolean);
 
-  // ۱) GET /products  ← لیست همه محصولات
-  if (method === "GET" && url === "/products") {
-    return sendJson(res, 200, products);
-  }
-
-  // ۲) GET /products/2  ← یک محصول
-  if (method === "GET" && url.startsWith("/products/")) {
-    const product = products.find((p) => p.id === id);
-    if (!product) {
-      return sendJson(res, 404, { error: "Product not found" });
+  try {
+    if (method === "POST" && path === "/auth/register") {
+      return await register(req, res);
     }
-    return sendJson(res, 200, product);
-  }
-
-  // ۳) POST /products  ← ساخت محصول جدید
-  if (method === "POST" && url === "/products") {
-    let data;
-    try {
-      data = await readBody(req);
-    } catch {
-      return sendJson(res, 400, { error: "Invalid JSON" });
+    if (method === "POST" && path === "/auth/login") {
+      return await login(req, res);
     }
 
-    if (!data.name || typeof data.price !== "number") {
-      return sendJson(res, 400, { error: "name and price are required" });
+    if (method === "GET" && path === "/users/me") {
+      return await getownprofile(req, res);
+    }
+    if (method === "PUT" && path === "/users/me") {
+      return await editprofile(req, res);
+    }
+    if (method === "PUT" && path === "/users/me/password") {
+      return await editpassword(req, res);
+    }
+    if (method === "DELETE" && path === "/users/me") {
+      return await deleteuser(req, res);
+    }
+    if (method === "GET" && parts[0] === "users" && parts.length === 2 && parts[1] !== "me") {
+      return await getotherprofile(req, res);
     }
 
-    const product = {
-      id: nextId,
-      name: data.name,
-      price: data.price,
-      stock: data.stock || 0
-    };
-    nextId = nextId + 1;
-    products.push(product);
-    return sendJson(res, 201, product);
-  }
-
-  // ۴) PUT /products/2  ← ویرایش محصول
-  if (method === "PUT" && url.startsWith("/products/")) {
-    const product = products.find((p) => p.id === id);
-    if (!product) {
-      return sendJson(res, 404, { error: "Product not found" });
+    if (method === "POST" && path === "/products/search") {
+      return await productsearch(req, res);
+    }
+    if (method === "POST" && path === "/products") {
+      return await productpost(req, res);
+    }
+    if (parts[0] === "products" && parts.length === 2) {
+      if (method === "GET") {
+        return await singleproduct(req, res);
+      }
+      if (method === "PUT") {
+        return await editproduct(req, res);
+      }
+      if (method === "DELETE") {
+        return await productdelete(req, res);
+      }
+    }
+    if (method === "POST" && parts[0] === "products" && parts.length === 3 && parts[2] === "rate") {
+      return await rateproduct(req, res);
     }
 
-    let data;
-    try {
-      data = await readBody(req);
-    } catch {
-      return sendJson(res, 400, { error: "Invalid JSON" });
+    if (parts[0] === "admin") {
+      if (method === "POST" && path === "/admin/users/search") {
+        return await usersearch(req, res);
+      }
+      if (method === "POST" && path === "/admin/users") {
+        return await userpost(req, res);
+      }
+      if (parts[1] === "users" && parts.length === 3) {
+        if (method === "GET") {
+          return await singleuser(req, res);
+        }
+        if (method === "PUT") {
+          return await edituser(req, res);
+        }
+        if (method === "DELETE") {
+          return await userdelete(req, res);
+        }
+      }
+
+      if (method === "POST" && path === "/admin/products/search") {
+        return await adminProductsearch(req, res);
+      }
+      if (method === "POST" && path === "/admin/products") {
+        return await adminProductpost(req, res);
+      }
+      if (parts[1] === "products" && parts.length === 3) {
+        if (method === "GET") {
+          return await adminSingleproduct(req, res);
+        }
+        if (method === "PUT") {
+          return await adminEditproduct(req, res);
+        }
+        if (method === "DELETE") {
+          return await adminProductdelete(req, res);
+        }
+      }
     }
 
-    if (data.name !== undefined) product.name = data.name;
-    if (data.price !== undefined) product.price = data.price;
-    if (data.stock !== undefined) product.stock = data.stock;
-    return sendJson(res, 200, product);
-  }
-
-  // ۵) DELETE /products/2  ← حذف محصول
-  if (method === "DELETE" && url.startsWith("/products/")) {
-    const product = products.find((p) => p.id === id);
-    if (!product) {
-      return sendJson(res, 404, { error: "Product not found" });
+    return sendJson(res, 404, { error: "Route not found" });
+  } catch (error) {
+    console.error(error);
+    if (!res.headersSent) {
+      return sendJson(res, 500, { error: "Internal server error" });
     }
-
-    products = products.filter((p) => p.id !== id);
-    return sendJson(res, 200, { message: "Product deleted" });
   }
-
-  // ۶) Demo routes: GET /example and GET /example/2
-  // handleExample lives in example.js. We pass it sendJson because that
-  // helper is defined here; the module returns true if it answered.
-  if (handleExample(req, res, sendJson)) {
-    return;
-  }
-
-  // هر درخواست دیگری که به بالا نخورد
-  sendJson(res, 404, { error: "Route not found" });
 });
 
-server.listen(3000, () => {
-  console.log("Server is running on port 3000");
+server.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });

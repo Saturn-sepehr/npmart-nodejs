@@ -19,8 +19,4 @@ function readBody(req) {
   });
 }
 
-  const method = req.method;
-        const url = req.url;       
-  const id = Number(url.split("/")[2]);
-
-  module.exports = { sendJson , readBody}
+export { sendJson, readBody };
