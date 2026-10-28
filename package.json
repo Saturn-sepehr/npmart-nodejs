@@ -1,0 +1,13 @@
+{
+  "name": "temu-ebay",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently --kill-others --names frontend,backend --prefix-colors cyan,magenta \"npm run dev:frontend\" \"npm run dev:backend\"",
+    "dev:frontend": "npm --prefix frontend run dev -- --port ${FRONTEND_PORT:-3000}",
+    "dev:backend": "cd backend && PORT=${BACKEND_PORT:-4000} node --watch index.js"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}

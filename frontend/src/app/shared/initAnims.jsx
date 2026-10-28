@@ -6,7 +6,7 @@ import React, { useEffect } from 'react'
 export default function InitAnims() {
     const pathname = usePathname()
     useEffect(() => {
-        initAnimations()
+        initAnimations({ defer: true })
     },[pathname])
   return null
 }

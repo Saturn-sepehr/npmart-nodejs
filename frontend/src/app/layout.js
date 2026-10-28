@@ -17,7 +17,6 @@ export default function RootLayout({ children }) {
     >
       <InitAnims></InitAnims>
       <body className="min-h-full font-mono flex flex-col bg-gray-800">
-        
         <Header></Header>
         {children}
         </body>
