@@ -5,6 +5,29 @@ import { requireAuth } from '../Utils/Guards.js'
 
 let pNextId = productlist.reduce((max, p) => Math.max(max, p.id), 0) + 1;
 
+async function gettopratedproducts(req, res) {
+    // 1. Filter out products with no ratings or low ratings
+    // We'll only consider products with a rating of 4.0 or higher
+    const highlyRated = productlist.filter(p => p.rating && p.rating.rate >= 4.0);
+
+    // 2. Sort them from highest rated to lowest
+    const sortedProducts = highlyRated.sort((a, b) => {
+        // Primary sort: Rating Rate (Highest first)
+        if (b.rating.rate !== a.rating.rate) {
+            return b.rating.rate - a.rating.rate;
+        }
+        // Tie-breaker: More reviews means it's more reliable
+        return b.rating.count - a.rating.count;
+    });
+
+    // 3. Slice to get just the top 4 for the landing page
+    const topProducts = sortedProducts.slice(0, 4);
+
+    return sendJson(res, 200, topProducts);
+}
+
+
+
 async function productsearch(req , res) {
     let data;
     try{
@@ -107,6 +130,7 @@ async function singleproduct (req , res){
       }
       return sendJson(res , 200 , product)
 }
+
 
 async function editproduct (req , res){
       const me = requireAuth(req, res)
@@ -223,6 +247,7 @@ export {
     singleproduct,
     editproduct,
     productdelete,
-    rateproduct
+    rateproduct,
+    gettopratedproducts
 }
 

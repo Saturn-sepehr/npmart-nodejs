@@ -6,7 +6,8 @@ import {
   singleproduct,
   editproduct,
   productdelete,
-  rateproduct
+  rateproduct,
+  gettopratedproducts
 } from "./APIs/Products.js";
 import { register, login } from "./APIs/Auth.js";
 import {
@@ -36,6 +37,16 @@ const server = http.createServer(async (req, res) => {
   const method = req.method;
   const path = req.url.split("?")[0];
   const parts = path.split("/").filter(Boolean);
+    // --- CORS HEADERS ---
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+
+  if (method === "OPTIONS") {
+    res.writeHead(204);
+    return res.end();
+  }
+  // --------------------
 
   try {
     if (method === "POST" && path === "/auth/register") {
@@ -66,6 +77,9 @@ const server = http.createServer(async (req, res) => {
     }
     if (method === "POST" && path === "/products") {
       return await productpost(req, res);
+    }
+        if (method === "GET" && path === "/topproducts") {
+      return await gettopratedproducts(req, res);
     }
     if (parts[0] === "products" && parts.length === 2) {
       if (method === "GET") {

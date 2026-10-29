@@ -2,11 +2,12 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Header from "./shared/layout/Header";
 import InitAnims from "./shared/initAnims";
-
+import Boot from "./shared/Boot";
+import Display from "./shared/Display";
 
 export const metadata = {
-  title: "e-commerce student website",
-  description: "An e-commerce website made with node.js and next.js using gclass-anims to both learn node.js and to test gclass-anims in an actual website :3",
+  title: "npmart",
+  description: "An e-commerce website for learning Node.js :3",
 };
 
 export default function RootLayout({ children }) {
@@ -15,11 +16,24 @@ export default function RootLayout({ children }) {
       lang="en"
       className="h-full antialiased"
     >
-      <InitAnims></InitAnims>
-      <body className="min-h-full font-mono flex flex-col bg-gray-800">
-        <Header></Header>
-        {children}
-        </body>
+        <InitAnims />
+       
+      <body >
+        <Display>
+         {/* <Boot></Boot> */}
+        <div className="h-screen w-screen font-mono flex flex-col bg-gray-800 overflow-hidden">
+
+        <div className="shrink-0 z-1">
+          <Header />
+        </div>
+
+
+        <div className="flex-1 overflow-y-auto">
+          {children}
+        </div>
+        </div>
+        </Display>
+      </body>
     </html>
   );
 }
